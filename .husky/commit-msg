@@ -1,0 +1,22 @@
+#!/bin/bash
+
+validate_commit_message(){
+    commit_message=$1
+    jira_regex='Feature-[0-9]+'
+    if [[ $commit_message =~ ^[[:space:]]*$jira_regex[[:space:]]*:[[:space:]]* ]]; then
+        message=$(echo "$commit_message" | sed -E "s/^[[:space:]]*$jira_regex[[:space:]]*:[[:space:]]*//")
+        message=$(echo "$message" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        if [[ -z "${message// }" ]]; then
+            echo "Error: Commit message ,must contain a message after  the jira pattern (eg.. Feature-1: Your Message)"
+            exit 1
+        fi
+        return 0
+    else 
+         echo "Error: Commit message ,must start with a valid jira pattern followed ba a colon(eg.. Feature-1: Your Message)"
+         exit 1
+    fi        
+}
+
+commit_message=$(cat "$1")
+
+validate_commit_message "$commit_message"
